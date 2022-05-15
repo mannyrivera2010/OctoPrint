@@ -2,7 +2,7 @@
 
 {% include "snippets/plugins/tracking/trackingDescription.jinja2" %}
 
-<form class="form-horizontal">
+<form class="form-horizontal" onsubmit="return false;">
     <div class="control-group">
         <div class="controls">
             <label class="checkbox">
@@ -51,6 +51,9 @@
             </label>
             <label class="checkbox">
                 <input type="checkbox" data-bind="checked: settings.plugins.tracking.events.slicing"> {{ _('Onboard slicing actions') }}
+            </label>
+            <label class="checkbox">
+                <input type="checkbox" data-bind="checked: settings.plugins.tracking.events.webui_load"> {{ _('Web interface load') }}
             </label>
         </div>
     </div>

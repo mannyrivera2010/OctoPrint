@@ -1,66 +1,83 @@
-# Supporters 
+# Supporters
 
 Development of this version of OctoPrint wouldn't have been possible without
-[the financial support by the community](https://octoprint.org/support-octoprint/) -
+[the financial support by the community](https://support.octoprint.org) -
 thanks to everyone who contributed!
 
-## Patreon Patrons
+## Patrons & Sponsors
 
-  * Alex Krilov
-  * Andrew Moorby
+  * 3D-TECH
+  * 3DPrinterOS
   * Arnljot Arntsen
+  * Artillery 3D
+  * Ash King
   * BigTreeTech
   * Boris Hussein
   * Brad Jackson
+  * BuildBee
   * Christian Petropolis
   * Christian Wolf
-  * D Brian Kimmel
+  * Christian Würthner
+  * Christoph Sigrist
+  * Creality3D
+  * David Bounds
   * DeltaMaker 3D Printers
   * Dennis Breining
-  * Dorian Gray
+  * Douglas Floyd
+  * Dr. Frank Wester
   * Eric Betts
   * Ernesto Martinez
   * Franziska Kunsmann
-  * GadgetAngel
   * George Robles
   * Greg Holloway
   * Hog Duske
-  * Hugh Blemings
-  * jean-claude migneault
-  * Jeff Renfer
-  * Jeremiah Avery
+  * Itay Shem-tov
+  * James Mackay
+  * Jeff Moe
+  * Jeremy Cole
   * Joshua Wills
+  * Julian Melo
   * Justin Kaufman
   * Kaile Riser
-  * Kale Stedman
   * Kazuhiro Ogura
+  * Kelly C McNiece
   * Kenneth Jiang
   * Kurt Wubbels
   * Kyle Menigoz
   * LA 3D Printer Repair
+  * Lachlan Bell
   * Lee Dohm
+  * Lefteris Lertas
+  * LulzBot
   * Makespace Madrid
   * Mark Walker
-  * Martin Majewski
   * Michael Aumock
+  * Mike Kershaw
   * Miles Flavel
   * Mosaic Manufacturing
+  * Nat Friedman
   * Neil R. Goldberg
-  * Patrick Glyré
-  * Patrick McGinnis
-  * Prof Yuh Wen Chen
+  * Norman Jaffe
+  * Peopoly
+  * Pete Barnwell
+  * Raise3D
   * Randy C. Will
   * Ranjib Dey
+  * Richard McGuire
   * Richard Michaud
-  * Rigid3D
+  * Richard Stocks
   * Robert Gusek
   * Ronald Griehsler
-  * Sacha Telgenhof
-  * Simon Hallam
+  * Sebastien Andrivet
   * Stefan Krister
+  * Steve Dougherty
   * Steve Thompson
   * Sven Mueller
-  * Trent Shumay
+  * TH3D
+  * The Spaghetti Detective
+  * TJ Horner
+  * Ulderico Cirello
   * Ulrich Kempken
+  * Yehuda Katz
 
-and 1741 more wonderful people pledging on the [Patreon campaign](https://patreon.com/foosel) or via [Github Sponsors](https://github.com/users/foosel/sponsorship)!
+and 2285 more wonderful people pledging on the [Patreon campaign](https://patreon.com/foosel) or via [GitHub Sponsors](https://github.com/users/foosel/sponsorship)!

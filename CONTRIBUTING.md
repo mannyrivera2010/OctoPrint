@@ -39,7 +39,7 @@ nothing but ticket management.
   [community forum at community.octoprint.org](https://community.octoprint.org) for
   such support issues.
 - If you are a **developer** that wants to brainstorm a pull request or possible
-  changes to the plugin system, please get in touch on the 
+  changes to the plugin system, please get in touch on the
   [community forum at community.octoprint.org](https://community.octoprint.org/c/development).
 - If you need **support**, have a **question** or some **other reason** that
   doesn't fit any of the above categories, the issue tracker is not the right place.
@@ -49,7 +49,7 @@ No matter what kind of ticket you create, never mix two or more "ticket reasons"
 into one ticket: One ticket per bug, request, brainstorming thread please.
 
 > 👉 **Note**
-> 
+>
 > A bot is in place that monitors new tickets, automatically
 > categorizes them and checks new bug reports for usage of the provided template.
 > That bot will only bother you if you open a ticket that appears to be a bug (no
@@ -60,7 +60,7 @@ into one ticket: One ticket per bug, request, brainstorming thread please.
 ## How to file a bug report
 
 If you encounter an issue with OctoPrint, you are welcome to
-[submit a bug report](https://github.com/foosel/OctoPrint/issues/new).
+[submit a bug report](https://github.com/OctoPrint/OctoPrint/issues/new?template=bug_report.yml).
 
 Before you do that for the first time though please take a moment to read the
 following section *completely* and also follow the instructions in the
@@ -71,12 +71,12 @@ following section *completely* and also follow the instructions in the
 1. **Make sure you are at the right location**. This is the bug tracker
    of the official version of OctoPrint, which is the 3D print server and
    corresponding web interface itself.
-   
+
    **OctoPrint doesn't manage your network connection or your webcam nor
-   can it fix your printer not getting detected as a serial interface** - 
-   if you have any kinds of problems with that, get in touch on the 
+   can it fix your printer not getting detected as a serial interface** -
+   if you have any kinds of problems with that, get in touch on the
    [community forum](https://community.octoprint.org).
-   
+
    **This is not the bug tracker of OctoPi**, which is the preconfigured
    Raspberry Pi image including OctoPrint among other things - that one can be found
    [here](https://github.com/guysoft/OctoPi). If you have any kind of specific
@@ -118,24 +118,24 @@ following section *completely* and also follow the instructions in the
    it is the same as your's, it actually behaves the same as your's. E.g. if someone gives steps
    to reproduce his bug that looks like your's, reproduce the bug like that if possible,
    and only add a "me too" if you actually can reproduce the same
-   issue. Also **provide all information** as [described below](#what-should-i-include-in-a-bug-report)
+   issue. Also **provide all information like Systeminfo Bundle, additional logs & versions, different reproduction steps**
    and whatever was additionally requested over the course of the ticket
    even if you "only" add to an existing ticket. The more information available regarding a bug, the higher
    the chances of reproducing and solving it. But "me too" on an actually unrelated ticket
    makes it more difficult due to on top of having to figure out the original problem
    there's now also a [red herring](https://en.wikipedia.org/wiki/Red_herring) interfering - so please be
    very diligent here!
-   
-If in doubt about any of the above - get in touch on the [community forum](https://community.octoprint.org)
-instead of opening a ticket here. If you are actually running into a bug, we'll figure it out together 
+
+If in doubt about any of the above - get in touch on the [community forums](https://community.octoprint.org)
+instead of opening a ticket here. If you are actually running into a bug, we'll figure it out together
 there.
-   
+
 ### What should I include in a bug report?
 
 First of all make sure your use **a descriptive title**. "It doesn't work"
 and similar unspecific complaints are NOT descriptive titles.
 
-**Always use the following template, even if only adding a "me too" to an 
+**Always use the following template, even if only adding a "me too" to an
 existing ticket**:
 
 ```
@@ -152,7 +152,7 @@ or request features within OctoPrint (not OctoPi, not any OctoPrint
 plugins and not unofficial OctoPrint versions).
 
 Do not seek support here ("I need help with ...", "I have a
-question ..."), that belongs on the community forum at 
+question ..."), that belongs on the community forum at
 community.octoprint.org, NOT here.
 
 Mark requests with a "[Request]" prefix in the title please. For bug
@@ -172,7 +172,7 @@ Thank you!
 
 #### What were you doing?
 
-<!-- 
+<!--
 Please be as specific as possible here. The maintainers will need to
 reproduce your issue in order to fix it and that is not possible if they
 don't know what you did to get it to happen in the first place.
@@ -180,9 +180,10 @@ don't know what you did to get it to happen in the first place.
 Ideally provide exact steps to follow in order to reproduce your problem:
 -->
 
-1. ...
-2. ...
-3. ...
+1. Go to '...'
+2. Click on '....'
+3. Scroll down to '....'
+4. See error
 
 <!--
 If you encountered a problem with specific files of any sorts, make sure
@@ -195,7 +196,7 @@ to also include a link to a file with which to reproduce the problem.
 
 #### Did the same happen when running OctoPrint in safe mode?
 
-<!-- 
+<!--
 Test if you can reproduce your problem in safe mode. You can find information
 on how to enable safe mode in the Contribution Guidelines.
 
@@ -211,14 +212,6 @@ If you can't test this in safe mode, state why.
 Can be found in the lower left corner of the web interface. ALWAYS INCLUDE.
 -->
 
-#### Operating System running OctoPrint
-
-<!--
-OctoPi, Linux, Windows, MacOS, something else? With version please.
-OctoPi's version can be found in /etc/octopi_version or in the lower left
-corner of the web interface.
--->
-
 #### Printer model & used firmware incl. version
 
 <!--
@@ -231,31 +224,19 @@ If applicable, always include if unsure.
 If applicable, always include if unsure.
 -->
 
-#### Link to octoprint.log
+#### System Info Bundle
 
 <!--
-On gist.github.com or pastebin.com. ALWAYS INCLUDE and never truncate.
+Directly uploaded here. ALWAYS INCLUDE.
 
 The Contribution Guidelines tell you where to find that.
--->
-
-#### Link to contents of terminal tab or serial.log
-
-<!--
-On gist.github.com or pastebin.com. If applicable, always include if unsure or
-reporting communication issues. Never truncate.
-
-serial.log is usually not written due to performance reasons and must be
-enabled explicitly. Provide at the very least the FULL contents of your
-terminal tab at the time of the bug occurrence, even if you do not have
-a serial.log (which the Contribution Guidelines tell you where to find).
 -->
 
 #### Link to contents of Javascript console in the browser
 
 <!--
-On gist.github.com or pastebin.com or alternatively a screenshot. If applicable -
-always include if unsure or reporting UI issues.
+Directly uploaded here or on gist.github.com or pastebin.com.
+If applicable - always include if unsure or reporting UI issues.
 
 The Contribution Guidelines tell you where to find that.
 -->
@@ -269,9 +250,12 @@ If applicable. Always include if unsure or reporting UI issues.
 I have read the FAQ.
 ```
 
-Copy-paste this template **completely** (or use the version that gets pre-filled
-into the "new issue" form). Do not skip any lines or the bot *will* complain! Provide
-all requested information or your ticket will be closed.
+Provide the same kind and amount of information also when you are just adding on to an
+existing ticket!
+
+### Where can I find the System Info Bundle?
+
+Please refer to [this FAQ entry](https://community.octoprint.org/t/what-is-a-systeminfo-bundle-and-how-can-i-obtain-one/29887).
 
 ### Where can I find which version and branch I'm on?
 
@@ -287,9 +271,10 @@ See [How to open the Javascript Console in different browsers](https://webmaster
 
 ## Setting up a development environment
 
-See [the corresponding chapter in the documentation](http://docs.octoprint.org/en/master/development/index.html#setting-up-a-development-environment).
-This also includes information on how to run the test suite and how to build 
-the documentation.
+See [the corresponding chapter in the documentation](https://docs.octoprint.org/en/master/development/environment.html).
+This also includes information on how to run the test suite and how to build
+the documentation, the bundled virtual printer plugin and OctoPrint's versioning
+and branching strategy.
 
 ## Pull requests
 
@@ -297,11 +282,12 @@ the documentation.
    consider if it wouldn't be better suited for a plugin.** As a general rule
    of thumb, any feature that is only of interest to a small sub group should
    be moved into a plugin. If the current plugin system doesn't allow you to
-   implement your feature as a plugin, create a "Brainstorming" ticket to get
+   implement your feature as a plugin, please get in touch on the
+   [forums](https://community.octoprint.org/c/development) to get
    the discussion going on how best to solve *this* in OctoPrint's plugin
    system - maybe that's the actual PR you have been waiting for to contribute :)
 2. If you plan to make **any large or otherwise disruptive changes to the
-   code or appearance, please get in touch on the 
+   code or appearance, please get in touch on the
    [forums](https://community.octoprint.org/c/development)** first so
    that we can determine if it's a good time for your specific pull
    request. It might be that we're currently in the process of making
@@ -310,19 +296,20 @@ the documentation.
    just cause unnecessary work and frustration for everyone or
    possibly get the PR rejected.
 3. Create your pull request **from a custom branch** on your end (e.g.
-   `dev/myNewFeature`)[1].
+   `improve/myNewFeature`)[1].
 4. Create your pull request **only against the `maintenance` or `devel` branch**:
-     * if it's a bug fix for a bug in the current stable version, an improvement of existing functionality or a 
-       *small* new feature (e.g. a new hook, a new config flag, ...): `maintenance` branch
-     * otherwise: `devel` branch
+     * if it's a bug fix for a bug in the current stable version, an improvement of existing functionality or a
+       *small* backwards compatible new feature (e.g. a new hook, a new config flag, ...): `maintenance` branch
+     * if it's a bigger backwards compatible new feature: please [get in touch](https://community.octoprint.org/c/development) first to avoid
+       wasting work that doesn't match the current direction of the project or implement as a plugin.
+     * if it's any breaking backwards incompatible change: `devel` branch. In case of big changes, [get in touch](https://community.octoprint.org/c/development) first.
 5. Create **one pull request per feature/bug fix**.
 6. Make sure there are **only relevant changes** included in your PR. No
    changes to unrelated files, no additional files that don't belong (e.g.
    commits of your full virtual environment). Make sure your PR consists
    **ideally of only one commit** (use git's rebase and squash functionality).
 7. Make sure you **follow the current coding style**. This means:
-     * Tabs instead of spaces in the Python files[2]
-     * Spaces instead of tabs in the JavaScript sources
+     * Spaces for indenting and alignment, indentation width 4.
      * English language (code, variables, comments, ...)
      * Comments where necessary: Tell *why* the code does something like it does
        it, structure your code
@@ -333,29 +320,41 @@ the documentation.
        from experiments).
 8. Ensure your changes **pass the existing unit tests**. PRs that break
    those cannot be accepted. You can run the unit tests locally (after
-   [initial development environment setup with "develop" dependencies](http://docs.octoprint.org/en/master/development/index.html#setting-up-a-development-environment)) 
+   [initial development environment setup with "develop" dependencies](https://docs.octoprint.org/en/master/development/environment.html))
    by running
-   
+
    ```
-   nosetests --with-doctest
+   pytest
    ```
-   
-   in the OctoPrint checkout folder. A [travis build](https://travis-ci.org/foosel/OctoPrint) 
-   is also setup so that if the tests should fail, your PR will be marked 
+
+   in the OctoPrint checkout folder. An [automatic build workflow](https://github.com/OctoPrint/OctoPrint/actions?query=workflow%3ABuild)
+   is also setup so that if the tests should fail, your PR will be marked
    accordingly.
-9. **Test your changes thoroughly**. That also means testing with usage
-   scenarios you don't normally use, e.g. if you only use access control, test
-   without and vice versa. If you only test with your printer, test with the
-   virtual printer and vice versa. State in your pull request how you tested
-   your changes. Ideally **add unit tests** - OctoPrint severely lacks in that
-   department, but we are trying to change that, so any new code already covered
-   with a test suite helps a lot!
-10. In your pull request's description, **state what your pull request does**,
+9. Run the **pre-commit check suite** against your changes. You can run that (after
+   [initial development environment setup with "develop" dependencies](https://docs.octoprint.org/en/master/development/environment.html))
+   by running
+
+   ```
+   pre-commit run --hook-stage manual --all-files
+   ```
+
+   in the OctoPrint checkout folder. If you install the pre-commit hooks via
+   `pre-commit install` (which you really should!) this will even be taken care of for you prior to committing.
+
+   An [automatic build workflow](https://github.com/OctoPrint/OctoPrint/actions?query=workflow%3ABuild)
+   is in place that will run these checks - if they fail your PR will be marked accordingly.
+10. **Test your changes thoroughly**. That also means testing with usage
+    scenarios you don't normally use. If you only test with your printer, test with the
+    virtual printer and vice versa. State in your pull request how you tested
+    your changes. Ideally **add unit tests** - OctoPrint severely lacks in that
+    department, but we are trying to change that, so any new code already covered
+    with a test suite helps a lot!
+11. In your pull request's description, **state what your pull request does**,
     as in, what feature does it implement, what bug does it fix. The more
     thoroughly you explain your intent behind the PR here, the higher the
     chances it will get merged fast. There is a template provided below
     that can help you here.
-11. Don't forget to **add yourself to the [AUTHORS](./AUTHORS.md)
+12. Don't forget to **add yourself to the [AUTHORS](./AUTHORS.md)
     file** :)
 
 Template to use for Pull Request descriptions:
@@ -374,81 +373,13 @@ Template to use for Pull Request descriptions:
 #### Further notes
 ```
 
+## How is OctoPrint versioned?
+
+See [the corresponding chapter in the documentation](https://docs.octoprint.org/en/master/development/versioning.html).
+
 ## What do the branches mean?
 
-There are three main branches in OctoPrint:
-
-  * `master`: The master branch always contains the current stable release. It
-    is *only* updated on new releases. Will have a version number following
-    the scheme `<x>.<y>.<z>` (e.g. `1.2.9`) or - if it's absolutely necessary to
-    add a commit after release to this branch - `<x>.<y>.<z>.post<commits since x.y.z>`
-    (e.g. `1.2.9.post1`).
-  * `maintenance`: Improvements and fixes of the current release that make up
-    the next release go here. More or less continuously updated. You can consider
-    this a preview of the next release version. It should be very stable at all
-    times. Anything you spot in here helps tremendously with getting a rock solid
-    next stable release, so if you want to help out development, running the
-    `maintenance` branch and reporting back anything you find is a very good way
-    to do that. Will usually have a version number following the scheme
-    `<x>.<y>.<z+1>.dev<commits since increase of z>` for an OctoPrint version of `<x>.<y>.<z>`
-    (e.g. `1.2.10.dev12`).
-  * `devel`: Ongoing development of new features that will go into the next bigger
-    release (MINOR version number increases) will happen on this branch. Usually
-    kept stable, sometimes stuff can break though or lose backwards compatibility
-    temporarily. Can be considered the "bleeding edge". All PRs should target
-    *this* branch. Important improvements and fixes from PRs here are backported to
-    `maintenance` as needed. Will usually have a version number following the
-    scheme `<x>.<y+1>.0.dev<commits since increase of y>` for a current OctoPrint version
-    of `<x>.<y>.<z>` (e.g. `1.3.0.dev123`).
-  * `rc/maintenance`: This branch is reserved for future releases that have graduated from
-    the `maintenance` branch and are now being pushed on the "Maintenance"
-    pre release channel for further testing. Version number follows the scheme
-    `<x>.<y>.<z>rc<n>` (e.g. `1.2.9rc1`).
-  * `staging/maintenance`: Any preparation for potential follow-up RCs takes place here.
-    Version number follows the scheme `<x>.<y>.<z>rc<n+1>.dev<commits since increase of n>` (e.g.
-    `1.2.9rc1.dev3`) for a current Maintenance RC of `<x>.<y>.<z>rc<n>`.
-  * `rc/devel`: This branch is reserved for future releases that have graduated from
-    the `devel` branch and are now being pushed on the "Devel" pre release channel
-    for further testing. Version number follows the scheme `<x>.<y+1>.0rc<n>` (e.g. `1.3.0rc1`)
-    for a current stable OctoPrint version of `<x>.<y>.<z>`.
-  * `staging/devel`: Any preparation for potential follow-up Devel RCs takes place
-    here. Version number follows the scheme `<x>.<y>.0rc<n+1>.dev<commits since increase of n>` (e.g.
-    `1.3.0rc1.dev12`) for a current Devel RC of `<x>.<y>.0rc<n>`.
-
-Additionally, from time to time you might see other branches pop up in the repository.
-Those usually have one of the following prefixes:
-
-  * `fix/...`: Fixes under development that are to be merged into the `maintenance`
-    and `devel` branches.
-  * `improve/...`: Improvements under development that are to be merged into the
-    `maintenance` and `devel` branches.
-  * `dev/...` or `feature/...`: New functionality under development that is to be merged
-    into the `devel` branch.
-
-There is also the `gh-pages` branch, which holds OctoPrint's web page, and a few
-older development branches that are slowly being migrated or deleted.
-
-## How OctoPrint is versioned
-
-OctoPrint follows the [semantic versioning scheme](http://semver.org/) of **MAJOR.MINOR.PATCH**.
-
-The **PATCH** version number is the one increasing most often due to OctoPrint's maintenance releases.
-Releases that only change the patch number indicate that they contain bug fixes and small improvements
-of existing functionality. Example: 1.2.8 to 1.2.9.
-
-The **MINOR** version number increases with releases that add a lot of new functionality and
-large features. Example: 1.2.x to 1.3.0.
-
-Finally, the **MAJOR** version number increases if there are breaking API changes that concern any of the
-documented interfaces (REST API, plugin interfaces, ...). So far this hasn't happened. Example: 1.x.y to 2.0.0.
-
-OctoPrint's version numbers are automatically generated using [versioneer](https://github.com/warner/python-versioneer)
-and depend on the selected git branch, nearest git tag and commits. The generated version number
-should always be [PEP440](https://www.python.org/dev/peps/pep-0440/) compatible. Unless a git tag
-is used for version number determination, the version number will also contain the git hash within
-the local version identifier to allow for an exact determination of the active code base
-(e.g. `1.2.9.dev68+g46c7a9c`). Additionally, instances with active uncommitted changes will contain
-`.dirty` in the local version identifier.
+See [the corresponding chapter in the documentation](https://docs.octoprint.org/en/master/development/branches.html).
 
 ## History
 
@@ -477,14 +408,15 @@ the local version identifier to allow for an exact determination of the active c
   * 2018-03-29: "Where to find version numbers" is now located on the FAQ
   * 2018-10-18: Allow PRs against `maintenance` branch for improvements and small
     new features, suggest getting in touch on the forum for larger changes
+  * 2020-08-10: Update versioning scheme and PR instructions
+  * 2020-09-23: Move branch & versioning into development docs
+  * 2020-10-07: Introduce `pre-commit`
+  * 2021-02-04: Issue forms! \o/
+  * 2021-03-04: Correct issue forms link
+  * 2021-04-27: Systeminfo Bundles! \o/
 
 ## Footnotes
   * [1] - If you are wondering why, the problem is that anything that you add
     to your PR's branch will also become part of your PR, so if you create a
     PR from your version of `devel` chances are high you'll add changes to the
     PR that do not belong to the PR.
-  * [2] - Yes, we know that this goes against PEP-8. OctoPrint started out as
-    a fork of Cura and hence stuck to the coding style found therein. Changing
-    it now would make the history and especially `git blame` completely
-    unusable, so for now we'll have to deal with it (this decision might be
-    revisited in the future).

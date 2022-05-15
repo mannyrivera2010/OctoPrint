@@ -225,6 +225,12 @@ onUserPermissionsChanged(user)
    will be provided as only parameter. Note that this may also be triggered for not logged in guests if the guest
    group is modified. In this case ``user`` will be undefined.
 
+onBeforePrintStart(callback)
+   Called before a print is started either by clicking the "Print" button in the state panel or the select & print icon
+   in the file list. The callback to actually proceed with starting the print is provided as the only parameter. By returning
+   ``false`` from this, plugins may prevent a print from actually starting, optionally starting it at a later date by
+   calling ``callback`` themselves. This can be used for example to implement an additional confirmation dialog.
+
 onTabChange(next, current)
    Called before the main tab view switches to a new tab, so `before` the new tab becomes visible. Called with the
    next (changed to) and current (still visible) tab's hash (e.g. ``#control``). Note that ``current`` might be undefined
@@ -237,6 +243,11 @@ onAfterTabChange(current, previous)
 getAdditionalControls()
    Your view model may return additional custom control definitions for inclusion on the "Control" tab of OctoPrint's
    interface. See :ref:`the custom control feature<sec-features-custom_controls>`.
+
+   .. note::
+
+      Controls injected from a view model do not support feedback controls (as defined by
+      ``regex`` and ``template``).
 
 onSettingsShown()
    Called when the settings dialog is shown.
@@ -253,6 +264,10 @@ onUserSettingsShown()
 
 onUserSettingsHidden()
    Called when the user settings dialog is hidden.
+
+onUserSettingsBeforeSave()
+   Called just before the user settings view model is sent to the server. This is useful, for example, if your plugin
+   needs to compute persisted settings from a custom view model.
 
 onWizardDetails(response)
    Called with the response from the wizard detail API call initiated before opening the wizard dialog. Will contain
@@ -438,7 +453,7 @@ Web interface reconnect
 
 .. seealso::
 
-   `OctoPrint's core viewmodels <https://github.com/foosel/OctoPrint/tree/devel/src/octoprint/static/js/app/viewmodels>`_
+   `OctoPrint's core viewmodels <https://github.com/OctoPrint/OctoPrint/tree/master/src/octoprint/static/js/app/viewmodels>`_
       OctoPrint's own view models use the same mechanisms for interacting with each other and the web application as
       plugins. Their source code is therefore a good point of reference on how to achieve certain things.
    `KnockoutJS documentation <http://knockoutjs.com/documentation/introduction.html>`_

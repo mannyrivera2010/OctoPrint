@@ -20,7 +20,7 @@
 
     <div class="pull-left">
         <div class="btn-group">
-            <button class="btn btn-small dropdown-toggle" data-toggle="dropdown"><i class="fa fa-square-o"></i> <span class="caret"></span></button>
+            <button class="btn btn-small dropdown-toggle" data-toggle="dropdown"><i class="far fa-square"></i> <span class="caret"></span></button>
             <ul class="dropdown-menu">
                 <li><a href="javascript:void(0)" data-bind="click: markFilesOnPage">{{ _('Select all on this page') }}</a></li>
                 <li><a href="javascript:void(0)" data-bind="click: markAllFiles">{{ _('Select all') }}</a></li>
@@ -45,8 +45,8 @@
             <td class="settings_plugin_backup_checkbox"><input type="checkbox" data-bind="value: name, checked: $root.markedForBackupDeletion"></td>
             <td class="settings_plugin_backup_name" data-bind="text: name"></td>
             <td class="settings_plugin_backup_date" data-bind="text: formatDate(date)"></td>
-            <td class="settings_plugin_backup_size" data-bind="text: formatSize(size)"></td>
-            <td class="settings_plugin_backup_actions"><a href="javascript:void(0)" title="{{ _('Delete')|edq }}" class="fa fa-trash-o" data-bind="click: function() { $parent.removeBackup($data.name) }, css: {disabled: $root.backupInProgress() || $root.restoreInProgress()"></a>&nbsp;|&nbsp;<a href="javascript:void(0)" title="{{ _('Download')|edq }}" class="fa fa-download" data-bind="attr: {href: url}"></a><span data-bind="visible: $parent.restoreSupported()">&nbsp;|&nbsp;<a href="javascript:void(0)" title="{{ _('Restore')|edq }}" data-bind="click: function() { $parent.restoreBackup($data.name) }, css: {disabled: $root.backupInProgress() || $root.restoreInProgress()"><i class="fa fa-refresh"></i></a></span></td>
+            <td class="settings_plugin_backup_size"><i class="fa fa-warning text-error" data-bind="visible: $root.isAboveUploadSize($data)" title="{{ _("This backup exceeds the maximum allowed upload size")|edq }}"></i> <span data-bind="text: formatSize(size)"></span></td>
+            <td class="settings_plugin_backup_actions"><a href="javascript:void(0)" title="{{ _('Delete')|edq }}" class="far fa-trash-alt" data-bind="click: function() { $parent.removeBackup($data.name) }, css: {disabled: $root.backupInProgress() || $root.restoreInProgress()}"></a>&nbsp;|&nbsp;<a href="javascript:void(0)" title="{{ _('Download')|edq }}" class="fas fa-download" data-bind="attr: {href: url}"></a><span data-bind="visible: $parent.restoreSupported()">&nbsp;|&nbsp;<a href="javascript:void(0)" title="{{ _('Restore')|edq }}" data-bind="click: function() { $parent.restoreBackup($data.name) }, css: {disabled: $root.backupInProgress() || $root.restoreInProgress()}"><i class="fas fa-sync"></i></a></span></td>
         </tr>
         </tbody>
     </table>
@@ -61,17 +61,28 @@
             <li data-bind="css: {disabled: backups.currentPage() === backups.lastPage()}"><a href="javascript:void(0)" data-bind="click: backups.nextPage">»</a></li>
         </ul>
     </div>
+
+    <p>
+        <strong>{{ _("Note:") }}</strong>
+        {% trans marker="<i class='fa fa-warning text-error'></i>" %}
+            OctoPrint currently only allows uploading backups of a maximum size of
+            {{ plugin_backup_max_upload_size_str }} via the UI. Backups larger than this can only be restored by command line,
+            or by adjusting the size by removing large contents (like timelapses) from the
+            zip prior to uploading. Backups exceeding this size limit are marked with a
+            {{ marker }} up there.
+        {% endtrans %}
+    </p>
 </div>
 
 <h3>{{ _('Create backup') }}</h3>
 
 <p>{{ _('Create a new backup of the current state.') }}</p>
 
-<form class="form-horizontal">
-    <div class="control-group">
+<form class="form-horizontal" onsubmit="return false;">
+    <div class="control-group" title="{{ _('All files in the uploads folder and subfolders. These are the files in the Files List, plus any metadata that has been generated for those files.')|edq }}">
         <div class="controls">
             <label class="checkbox">
-                <input type="checkbox" data-bind="value: 'uploads', checked: excludeFromBackup"> {{ _('Exclude uploaded files & metadata from backup') }}
+                <input type="checkbox" data-bind="value: 'uploads', checked: excludeFromBackup"> {{ _('Exclude uploaded files (& associated metadata) from backup') }}
             </label>
         </div>
     </div>
@@ -86,7 +97,7 @@
 
     <div class="control-group">
         <div class="controls">
-            <button class="btn btn-primary" data-bind="enable: !backupInProgress() && !restoreInProgress(), click: createBackup"><i class="fa fa-spinner fa-spin" data-bind="visible: backupInProgress"></i> {{ _('Create backup now') }}</button>
+            <button class="btn btn-primary" data-bind="enable: !backupInProgress() && !restoreInProgress(), click: createBackup"><i class="fas fa-spinner fa-spin" data-bind="visible: backupInProgress"></i> {{ _('Create backup now') }}</button>
         </div>
     </div>
 </form>
@@ -96,26 +107,8 @@
 
     <p>{{ _('Restore settings & files from an uploaded backup archive.') }}</p>
 
-    <form class="form-horizontal">
-        <div class="control-group">
-            <label class="control-label">{{ _('Backup file') }}</label>
-            <div class="controls">
-                <div class="input-prepend">
-                    <span class="btn fileinput-button">
-                        <span>{{ _('Browse...') }}</span>
-                        <input id="settings-backup-upload" type="file" name="file" data-url="{{ url_for("plugin.backup.perform_restore") }}" accept=".zip">
-                    </span>
-                    <span class="add-on" data-bind="text: backupUploadName"></span>
-                </div>
-            </div>
-        </div>
-
-        <div class="control-group">
-            <div class="controls">
-                <button class="btn btn-primary" data-bind="enable: !backupInProgress() && !restoreInProgress(), click: performRestoreFromUpload"><i class="fa fa-spinner fa-spin" data-bind="visible: restoreInProgress"></i> {{ _('Upload & restore') }}</button>
-            </div>
-        </div>
-    </form>
+    {% set plugin_backup_upload_form_id='settings-backup-upload' %}
+    {% include "snippets/plugin/backup/backup_plugin_upload_form.jinja2" %}
 </div>
 
 <div data-bind="visible: !restoreSupported()">

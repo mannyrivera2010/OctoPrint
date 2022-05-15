@@ -1,4 +1,8 @@
-<form class="form-horizontal">
+<div class="alert alert-block">
+    <strong>{{ _('Note: ') }}</strong>{{ _('Changing most of these settings requires restarting the connection with your printer for your changes to become effective.') }}
+</div>
+
+<form class="form-horizontal" onsubmit="return false;">
     <ul class="nav nav-pills">
         <li class="active"><a href="#settings_serial_general" data-toggle="tab">{{ _('General') }}</a></li>
         <li><a href="#settings_serial_timeouts" data-toggle="tab">{{ _('Intervals &amp; timeouts') }}</a></li>
@@ -44,10 +48,31 @@
                     </div>
                 </div>
                 <div class="control-group">
+                    <label class="control-label" for="settings-serialBlacklistedPorts">{{ _('Blacklisted serial ports') }}</label>
+                    <div class="controls">
+                        <textarea rows="4" class="block" id="settings-serialBlacklistedPorts" data-bind="value: serial_blacklistedPorts"></textarea>
+                        <span class="help-inline">{{ _('Use this to define <a href="%%(glob_url)s">glob patterns</a> matching serial ports to blacklist for connecting against, e.g. <code>/dev/ttyS*</code>. One entry per line.')|format(glob_url="http://docs.python.org/2/library/glob.html") }}</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="settings-serialBlacklistedBaudrates">{{ _('Blacklisted baud rates') }}</label>
+                    <div class="controls">
+                        <input type="text" class="input-block-level" id="settings-serialBlacklistedBaudrates" data-bind="value: serial_blacklistedBaudrates">
+                        <span class="help-inline">{{ _('Use this to define serial port baud rates to blacklist for connecting with, e.g. <code>123456</code>. Comma separated.') }}</span>
+                    </div>
+                </div>
+                <div class="control-group">
                     <div class="controls">
                         <label class="checkbox">
                             <input type="checkbox" data-bind="checked: serial_exclusive" id="settings-serialExclusive"> {{ _('Request exclusive access to the serial port') }}
                             <span class="help-block">{{ _('Uncheck this if you are having problems connecting to your printer.') }}</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls">
+                        <label class="checkbox">
+                            <input type="checkbox" data-bind="checked: serial_lowLatency" id="settings-serialLowLatency"> {{ _('Request low latency mode on the serial port') }}
                         </label>
                     </div>
                 </div>
@@ -130,6 +155,16 @@
                         <span class="help-inline">{{ _('Autoreport interval to request from firmware')}}</span>
                     </div>
                 </div>
+                <div class="control-group" title="{{ _('Position interval to request from autoreport capable firmwares. A value of 0 disables autoreporting by the firmware.')|edq }}">
+                    <label class="control-label" for="settings-serialTimeoutPosAutoreport">{{ _('Position autoreport interval') }}</label>
+                    <div class="controls">
+                        <div class="input-append">
+                            <input type="number" step="any" min="0" class="input-mini text-right" data-bind="value: serial_timeoutPosAutoreport" id="settings-serialTimeoutPosAutoreport">
+                            <span class="add-on">s</span>
+                        </div>
+                        <span class="help-inline">{{ _('Autoreport interval to request from firmware')}}</span>
+                    </div>
+                </div>
             </fieldset>
             <fieldset id="settings_serial_timeouts_timeouts">
                 <legend>{{ _('Timeouts') }}</legend>
@@ -159,13 +194,21 @@
                         </div>
                     </div>
                 </div>
-                <div class="control-group" title="{{ _('Time after which to consider an auto detection attempt to have failed if no successful connection is detected')|edq }}">
-                    <label class="control-label" for="settings-serialTimeoutDetection">{{ _('Autodetection timeout') }}</label>
+                <div class="control-group" title="{{ _('Time after which to consider the auto detection handshake attempt to have failed if no successful connection is detected')|edq }}">
+                    <label class="control-label" for="settings-serialTimeoutDetectionFirst">{{ _('Autodetection timeout') }}</label>
                     <div class="controls">
                         <div class="input-append">
-                            <input type="number" step="any" min="1" class="input-mini text-right" data-bind="value: serial_timeoutDetection" id="settings-serialTimeoutDetection">
+                            <input type="number" step="any" min="1" class="input-mini text-right" data-bind="value: serial_timeoutDetectionFirst" id="settings-serialTimeoutDetectionFirst">
                             <span class="add-on">s</span>
                         </div>
+                        <span class="help-inline">{{ _('First handshake attempt')}}</span>
+                    </div>
+                    <div class="controls">
+                        <div class="input-append">
+                            <input type="number" step="any" min="1" class="input-mini text-right" data-bind="value: serial_timeoutDetectionConsecutive" id="settings-serialTimeoutDetectionConsecutive">
+                            <span class="add-on">s</span>
+                        </div>
+                        <span class="help-inline">{{ _('Consecutive handshake attempts')}}</span>
                     </div>
                 </div>
                 <div class="control-group" title="{{ _('Time after which to consider a position query on pause or cancel to have failed')|edq }}">
@@ -178,7 +221,7 @@
                     </div>
                 </div>
                 <div>
-                    <div><small><a href="#" class="muted" data-bind="toggleContent: { class: 'fa-caret-right fa-caret-down', container: '#settings_serial_timeouts_timeouts .hide' }"><i class="fa fa-caret-right"></i> {{ _('Advanced options') }}</a></small></div>
+                    <div><small><a href="#" class="muted" data-bind="toggleContent: { class: 'fa-caret-right fa-caret-down', container: '#settings_serial_timeouts_timeouts .hide' }"><i class="fas fa-caret-right"></i> {{ _('Advanced options') }}</a></small></div>
                     <div class="hide">
                         <div class="control-group" title="{{ _('Time to wait after opening the serial connection before starting baudrate detection')|edq }}">
                             <label class="control-label" for="settings-serialTimeoutBaudrateDetectionPause">{{ _('Initial baudrate detection pause') }}</label>
@@ -233,6 +276,13 @@
                     <div class="control-group">
                         <div class="controls">
                             <label class="checkbox">
+                                <input type="checkbox" data-bind="checked: serial_sdLowerCase" id="settings-serialSdLowerCase"> {{ _('Select SD files by lower case path') }} <span class="label">{{ _('Prusa Firmware') }}</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="controls">
+                            <label class="checkbox">
                                 <input type="checkbox" data-bind="checked: serial_sdRelativePath" id="settings-serialSdRelativePath"> {{ _('Select SD files by relative path') }} <span class="label">{{ _('RepRap Firmware') }}</span>
                             </label>
                         </div>
@@ -241,6 +291,13 @@
                         <div class="controls">
                             <label class="checkbox">
                                 <input type="checkbox" data-bind="checked: serial_sdAlwaysAvailable" id="settings-serialSdAlwaysAvailable"> {{ _('Always assume SD card is present') }} <span class="label">{{ _('Repetier') }}</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="controls">
+                            <label class="checkbox">
+                                <input type="checkbox" data-bind="checked: serial_disableSdPrintingDetection" id="settings-disableSdPrintingDetection"> {{ _('Disable SD printing detection') }} <span class="label">{{ _('Ultimaker 2/2+') }}</span>
                             </label>
                         </div>
                     </div>
@@ -288,7 +345,7 @@
                     </div>
                 </div>
                 <div>
-                    <div><small><a href="#" class="muted" data-bind="toggleContent: { class: 'fa-caret-right fa-caret-down', container: '#settings_serial_protocol_firmware .hide' }"><i class="fa fa-caret-right"></i> {{ _('Advanced options') }}</a></small></div>
+                    <div><small><a href="#" class="muted" data-bind="toggleContent: { class: 'fa-caret-right fa-caret-down', container: '#settings_serial_protocol_firmware .hide' }"><i class="fas fa-caret-right"></i> {{ _('Advanced options') }}</a></small></div>
                     <div class="hide">
                         <div class="control-group">
                             <div class="controls">
@@ -307,6 +364,13 @@
                         <div class="control-group">
                             <div class="controls">
                                 <label class="checkbox">
+                                    <input type="checkbox" data-bind="checked: serial_capAutoreportPos" id="settings-serialCapAutoreportPos"> {{ _('Support position autoreporting by firmware, if detected') }}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <div class="controls">
+                                <label class="checkbox">
                                     <input type="checkbox" data-bind="checked: serial_capEmergencyParser" id="settings-serialCapEmergencyParser"> {{ _('Send emergency GCODES <code>M108</code> and <code>M410</code> without waiting for acknowledgement, if detected as supported by the firmware') }}
                                 </label>
                             </div>
@@ -315,6 +379,13 @@
                             <div class="controls">
                                 <label class="checkbox">
                                     <input type="checkbox" data-bind="checked: serial_capBusyProtocol" id="settings-serialCapBusyProtocol"> {{ _('Support <code>busy</code> protocol, if detected') }}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <div class="controls">
+                                <label class="checkbox">
+                                    <input type="checkbox" data-bind="checked: serial_capExtendedM20" id="settings-serialCapExtendedM20"> {{ _('Send <code>M20 L</code> instead of <code>M20</code> to use extended SD file lists, if detected as supported by the firmware') }}
                                 </label>
                             </div>
                         </div>
@@ -362,6 +433,13 @@
                     </div>
                 </div>
                 <div class="control-group">
+                    <label class="control-label" for="settings-serialIgnoredCommands">{{ _('Ignored commands') }}</label>
+                    <div class="controls">
+                        <input type="text" class="input-block-level" id="settings-serialIgnoredCommands" data-bind="value: serial_ignoredCommands">
+                        <span class="help-inline">{{ _('Use this to specify commands that should be silently ignored and never be sent to the printer. Just the G or M code, comma separated. Unlike blocked commands above, there will be no warning popup when these commands are encountered.') }}</span>
+                    </div>
+                </div>
+                <div class="control-group">
                     <label class="control-label" for="settings-serialPausingCommands">{{ _('Pausing commands') }}</label>
                     <div class="controls">
                         <input type="text" class="input-block-level" id="settings-serialPausingCommands" data-bind="value: serial_pausingCommands">
@@ -375,7 +453,7 @@
                         <span class="help-inline">{{ _('Use this to specify emergency commands which should jump any queues and - if supported by the firmware - be force sent. Just the G or M code, comma separated. Defaults to <code>M112</code>, <code>M108</code> and <code>M410</code>.') }}</span>                    </div>
                 </div>
                 <div>
-                    <div><small><a href="#" class="muted" data-bind="toggleContent: { class: 'fa-caret-right fa-caret-down', container: '#settings_serial_protocol_finetuning .hide' }"><i class="fa fa-caret-right"></i> {{ _('Advanced options') }}</a></small></div>
+                    <div><small><a href="#" class="muted" data-bind="toggleContent: { class: 'fa-caret-right fa-caret-down', container: '#settings_serial_protocol_finetuning .hide' }"><i class="fas fa-caret-right"></i> {{ _('Advanced options') }}</a></small></div>
                     <div class="hide">
                         <div class="control-group" title="{{ _('Command to send to the firmware on first handshake attempt.')|edq }}">
                             <label class="control-label" for="settings-serialHelloCommand">{{ _('"Hello" command') }}</label>
@@ -457,6 +535,50 @@
                         <input type="checkbox" data-bind="checked: serial_abortHeatupOnCancel" id="settings-serialAbortHeatupOnCancel"> {{ _('Attempt to abort any blocking heatups on cancel via <code>M108</code>.') }}
                         <span class="help-block">{{ _('Uncheck this if your firmware doesn\'t support <code>M108</code> for aborting blocking heatups!') }}</span>
                     </label>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>{{ _('Sanity Checking') }}</legend>
+                <div class="controls">
+                    <label class="checkbox">
+                        <input type="checkbox" data-bind="checked: serial_sanityCheckTools" id="settings-sanityCheckTools"> {{ _('Sanity check tool commands') }}  <span class="label label-important">{{ _('Warning') }}</span>
+                        <span class="help-block">{{ _('If enabled, OctoPrint will not send tool commands to your printer that exceed the number of extruders configured in the active printer profile, or for which the firmware has reported an "invalid extruder" error. Only uncheck this if OctoPrint or your firmware mistakingly mark valid tools as invalid and be sure to investigate the reason for that, it might be a misconfiguration you need to correct for proper operation.') }}</span>
+                    </label>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">{{ _('Display notifications for suppressed commands')}}</label>
+                    <div class="controls">
+                        <label class="radio">
+                            <input type="radio" name="notifySuppressedCommandsGroup" value="info" data-bind="checked: settings.serial.notifySuppressedCommands" id="settings-serialNotifySuppressedCommands-info"> {{ _('Show notifications of severity "info" and "warning"') }}
+                        </label>
+                        <label class="radio">
+                            <input type="radio" name="notifySuppressedCommandsGroup" value="warn" data-bind="checked: settings.serial.notifySuppressedCommands" id="settings-serialNotifySuppressedCommands-warn"> {{ _('Show notifications of severity "warning"') }}
+                        </label>
+                        <label class="radio">
+                            <input type="radio" name="notifySuppressedCommandsGroup" value="never" data-bind="checked: settings.serial.notifySuppressedCommands" id="settings-serialNotifySuppressedCommands-never"> {{ _('Never show notifications') }}
+                        </label>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>{{ _('Resend Tracking') }}</legend>
+                <div class="control-group" title="{{ _('Resend ratio threshold. Percentage of resend requests among all sent lines to consider critical.')|edq }}">
+                    <label class="control-label" for="settings-serialResendRatioThreshold">{{ _('Critical resend ratio') }}</label>
+                    <div class="controls">
+                        <div class="input-append">
+                            <input type="number" min="0" max="100" step="1" class="input-mini text-right" id="settings-serialResendRatioThreshold" data-bind="value: serial_resendRatioThreshold">
+                            <span class="add-on">%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="control-group" title="{{ _('Start tracking resend request after these many transmitted lines.')|edq }}">
+                    <label class="control-label" for="settings-serialResendRatioStart">{{ _('Tracking start') }}</label>
+                    <div class="controls">
+                        <div class="input-append">
+                            <input type="number" step="1" class="input-mini text-right" id="settings-serialResendRatioStart" data-bind="value: serial_resendRatioStart">
+                            <span class="add-on">lines</span>
+                        </div>
+                    </div>
                 </div>
             </fieldset>
         </div>

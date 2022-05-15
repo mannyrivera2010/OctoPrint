@@ -3,6 +3,8 @@
 Anonymous Usage Tracking Plugin
 ===============================
 
+.. versionadded:: 1.3.10
+
 The Anonymous Usage Tracking plugin provides valuable insights into how many instances running what versions of
 OctoPrint are out there, whether they are successfully completing print jobs and various other metrics.
 
@@ -33,7 +35,7 @@ The plugin supports the following configuration keys:
     * ``plugin``: Whether to track plugin related events (install, uninstall, ...)
     * ``update``: Whether to track update related events (update successful or not, ...)
     * ``printer``: Whether to track printer related events (connected, firmware, ...)
-    * ``printer_safety_check``: Whether to track warnings of the :ref:`Printer Safety Check <sec-bundledplugins-printer_safety_check>`
+    * ``printer_safety_check``: Whether to track warnings of the Printer Safety Check plugin
     * ``throttled``: Whether to track throttle events detected on the underlying system
 
 .. _sec-bundledplugins-tracking-sourcecode:

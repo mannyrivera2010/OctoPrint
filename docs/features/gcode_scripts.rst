@@ -18,13 +18,7 @@ simple "send-as-is" scripts but making use of a full blown templating language i
 this end, OctoPrint injects some variables into the :ref:`template rendering context <sec-features-gcode_scripts-context>`
 as described below.
 
-You can find the docs on the Jinja templating engine as used in OctoPrint at `jinja.octoprint.org <http://jinja.octoprint.org/templates.html>`_.
-
-.. note::
-
-   Due to backwards compatibility issues with Jinja versions 2.9+, OctoPrint currently only supports Jinja 2.8. For this
-   reason use the template documentation at `jinja.octoprint.org <http://jinja.octoprint.org/templates.html>`_ instead of the
-   documentation of current stable Jinja versions.
+You can find the docs on the Jinja templating engine as used in OctoPrint `here <https://jinja.palletsprojects.com/en/2.11.x/templates/>`_.
 
 .. _sec-features-gcode_scripts-predefined:
 
@@ -44,10 +38,21 @@ The following GCODE scripts are sent by OctoPrint automatically:
   * ``afterPrintDone``: Sent just after a print job finished. Defaults to an empty script.
   * ``afterPrintPaused``: Sent just after a print job was paused. Defaults to an empty script.
   * ``beforePrintResumed``: Sent just before a print job is resumed. Defaults to an empty script.
+  * ``beforeToolChange``: Sent just before a tool change command (``Tn``) is issued.
+  * ``afterToolChange``: Sent just after a tool change command (``Tn``) is issued
 
 .. note::
 
    Plugins may extend these scripts through :ref:`a hook <sec-plugins-hook-comm-protocol-scripts>`.
+
+.. _sec-features-gcode_scripts-events:
+
+Events
+------
+
+Every GCODE script that is executed will emit two events. The event name will start with 'GcodeScript' followed by the capitalized name
+of the script. When ``afterPrintDone`` has started the event will be ``GcodeScriptAfterPrintDoneRunning`` and once it has completed the last event
+will be ``GcodeScriptAfterPrintDoneFinished``. You can find more details in the :ref:`Events <sec-events-available_events-printing>` documentation.
 
 .. _sec-features-gcode_scripts-snippets:
 
@@ -67,7 +72,8 @@ Context
 All GCODE scripts have access to the following template variables through the template context:
 
   * ``printer_profile``: The currently selected :ref:`Printer Profile <sec-modules-printer-profile>`, including
-    information such as the extruder count, the build volume size, the filament diameter etc.
+    information such as the extruder count, the build volume size, the filament diameter etc. The individual properties
+    follow the common data model for :ref:`printer profiles <sec-api-printerprofiles-datamodel-profile>`.
   * ``last_position``: Last position reported by the printer via `M114` (might be unset if no `M114` was sent so far!).
     Consists of ``x``, ``y``, ``z`` and ``e`` coordinates as received by the printer and tracked values for ``f`` and
     current tool ``t`` taken from commands sent through OctoPrint. All of these coordinates might be ``None`` if no
@@ -103,6 +109,11 @@ There are a few additional template variables available for the following specif
       "Log position on cancel" under Settings > Serial > Advanced options!
     * ``cancel_temperature``: Last known temperature values when the print was cancelled. See ``last_temperature`` above
       for the structure to expect here.
+
+  * ``beforeToolChange`` and ``afterToolChange``
+
+    * ``tool.old``: The number of the previous tool
+    * ``tool.new``: The number of the new tool
 
 
 .. warning::
@@ -190,7 +201,7 @@ More nifty pause and resume
 ...........................
 
 If you do not have a multi-extruder setup, aren't printing from SD and have "Log position on pause" enabled under
-Settings > Serial > Advanced options, the following ``afterPrintPaused`` and
+Settings > Serial Connection > Behaviour > Pausing, the following ``afterPrintPaused`` and
 ``beforePrintResumed`` scripts might be interesting for you. With something like them in place, OctoPrint will move your print head
 out of the way to a safe rest position (here ``G1 X0 Y0``, you might want to adjust that) on pause and move it back
 to the persisted pause position on resume, making sure to also reset the extruder and feedrate.
@@ -250,7 +261,6 @@ to the persisted pause position on resume, making sure to also reset the extrude
 
 .. seealso::
 
-   `Jinja Template Designer Documentation <http://jinja.octoprint.org/templates.html>`_
+   `Jinja Template Designer Documentation <https://jinja.palletsprojects.com/en/2.11.x/templates/>`_
       Jinja's Template Designer Documentation describes the syntax and semantics of the template language used
-      also by OctoPrint's GCODE scripts. Linked here are the docs for Jinja 2.8.1, which OctoPrint still
-      relies on for backwards compatibility reasons.
+      also by OctoPrint's GCODE scripts.

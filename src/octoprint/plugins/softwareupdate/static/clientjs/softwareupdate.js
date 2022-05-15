@@ -4,16 +4,22 @@
     } else {
         factory(global.OctoPrintClient);
     }
-})(this, function(OctoPrintClient) {
-    var OctoPrintSoftwareUpdateClient = function(base) {
+})(this, function (OctoPrintClient) {
+    var OctoPrintSoftwareUpdateClient = function (base) {
         this.base = base;
 
         var url = this.base.getBlueprintUrl("softwareupdate");
         this.checkUrl = url + "check";
         this.updateUrl = url + "update";
+        this.configureUrl = url + "configure";
+        this.updatelogUrl = url + "updatelog";
     };
 
-    OctoPrintSoftwareUpdateClient.prototype.checkEntries = function(entries, force, opts) {
+    OctoPrintSoftwareUpdateClient.prototype.checkEntries = function (
+        entries,
+        force,
+        opts
+    ) {
         if (arguments.length == 1 && _.isObject(arguments[0])) {
             var params = arguments[0];
             entries = params.entries;
@@ -31,12 +37,12 @@
             data.force = true;
         }
         if (entries && entries.length) {
-            data.check = entries.join(",");
+            data.targets = entries.join(",");
         }
         return this.base.getWithQuery(this.checkUrl, data, opts);
     };
 
-    OctoPrintSoftwareUpdateClient.prototype.check = function(force, opts) {
+    OctoPrintSoftwareUpdateClient.prototype.check = function (force, opts) {
         if (arguments.length === 1 && _.isObject(arguments[0])) {
             var params = arguments[0];
             force = params.force;
@@ -46,7 +52,7 @@
         return this.checkEntries({entries: [], force: force, opts: opts});
     };
 
-    OctoPrintSoftwareUpdateClient.prototype.update = function(targets, force, opts) {
+    OctoPrintSoftwareUpdateClient.prototype.update = function (targets, force, opts) {
         if (arguments.length === 1 && _.isObject(arguments[0])) {
             var params = arguments[0];
             targets = params.targets;
@@ -66,7 +72,7 @@
         return this.base.postJson(this.updateUrl, data, opts);
     };
 
-    OctoPrintSoftwareUpdateClient.prototype.updateAll = function(force, opts) {
+    OctoPrintSoftwareUpdateClient.prototype.updateAll = function (force, opts) {
         if (arguments.length === 1 && _.isObject(arguments[0])) {
             var params = arguments[0];
             force = params.force;
@@ -79,6 +85,17 @@
         return this.base.postJson(this.updateUrl, data, opts);
     };
 
-    OctoPrintClient.registerPluginComponent("softwareupdate", OctoPrintSoftwareUpdateClient);
+    OctoPrintSoftwareUpdateClient.prototype.configure = function (data, opts) {
+        return this.base.postJson(this.configureUrl, data, opts);
+    };
+
+    OctoPrintSoftwareUpdateClient.prototype.getUpdatelog = function (opts) {
+        return this.base.get(this.updatelogUrl, opts);
+    };
+
+    OctoPrintClient.registerPluginComponent(
+        "softwareupdate",
+        OctoPrintSoftwareUpdateClient
+    );
     return OctoPrintSoftwareUpdateClient;
 });

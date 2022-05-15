@@ -14,7 +14,10 @@ Retrieve all files
 .. http:get:: /api/files
 
    Retrieve information regarding all files currently available and regarding the disk space still available
-   locally in the system.
+   locally in the system. The results are cached for performance reasons. If you
+   want to override the cache, supply the query parameter ``force`` and set it to ``true``. Note that
+   while printing a refresh/override of the cache for files stored on the printer's SD card
+   is disabled due to bandwidth restrictions on the serial interface.
 
    By default only returns the files and folders in the root directory. If the query parameter ``recursive``
    is provided and set to ``true``, returns all files and folders.
@@ -234,6 +237,7 @@ Retrieve all files
         "free": "3.2GB"
       }
 
+   :param force: If set to ``true``, forces a refresh, overriding the cache.
    :param recursive: If set to ``true``, return all files and folders recursively. Otherwise only return items on same level.
    :statuscode 200: No error
 
@@ -245,7 +249,10 @@ Retrieve files from specific location
 .. http:get:: /api/files/(string:location)
 
    Retrieve information regarding the files currently available on the selected `location` and -- if targeting
-   the ``local`` location -- regarding the disk space still available locally in the system.
+   the ``local`` location -- regarding the disk space still available locally in the system. The results are cached for performance reasons. If you
+   want to override the cache, supply the query parameter ``force`` and set it to ``true``.
+   Note that while printing a refresh/override of the cache for files stored on the printer's SD card
+   is disabled due to bandwidth restrictions on the serial interface.
 
    By default only returns the files and folders in the root directory. If the query parameter ``recursive``
    is provided and set to ``true``, returns all files and folders.
@@ -305,6 +312,7 @@ Retrieve files from specific location
    :param location: The origin location from which to retrieve the files. Currently only ``local`` and ``sdcard`` are
                     supported, with ``local`` referring to files stored in OctoPrint's ``uploads`` folder and ``sdcard``
                     referring to files stored on the printer's SD card (if available).
+   :param force: If set to ``true``, forces a refresh, overriding the cache.
    :param recursive: If set to ``true``, return all files and folders recursively. Otherwise only return items on same level.
    :statuscode 200: No error
    :statuscode 404: If `location` is neither ``local`` nor ``sdcard``
@@ -319,7 +327,8 @@ Upload file or create folder
    Upload a file to the selected ``location`` or create a new empty folder on it.
 
    Other than most of the other requests on OctoPrint's API which are expected as JSON, this request is expected as
-   ``Content-Type: multipart/form-data`` due to the included file upload.
+   ``Content-Type: multipart/form-data`` due to the included file upload. A ``Content-Length`` header specifying
+   the full length of the request body is required as well.
 
    To upload a file, the request body must at least contain the ``file`` form field with the
    contents and file name of the file to upload.
@@ -341,6 +350,7 @@ Upload file or create folder
       Host: example.com
       X-Api-Key: abcdef...
       Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryDeC2E3iWbTv1PwMC
+      Content-Length: 430
 
       ------WebKitFormBoundaryDeC2E3iWbTv1PwMC
       Content-Disposition: form-data; name="file"; filename="whistle_v2.gcode"
@@ -350,7 +360,7 @@ Upload file or create folder
       T0
       G21
       G90
-      ...
+
       ------WebKitFormBoundaryDeC2E3iWbTv1PwMC
       Content-Disposition: form-data; name="select"
 
@@ -400,6 +410,7 @@ Upload file or create folder
       Host: example.com
       X-Api-Key: abcdef...
       Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryDeC2E3iWbTv1PwMC
+      Content-Length: 263
 
       ------WebKitFormBoundaryDeC2E3iWbTv1PwMC
       Content-Disposition: form-data; name="file"; filename*=utf-8''20mm-%C3%BCml%C3%A4ut-b%C3%B6x.gcode
@@ -409,7 +420,7 @@ Upload file or create folder
       T0
       G21
       G90
-      ...
+
       ------WebKitFormBoundaryDeC2E3iWbTv1PwMC--
 
    .. sourcecode:: http
@@ -440,6 +451,7 @@ Upload file or create folder
       Host: example.com
       X-Api-Key: abcdef...
       Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryDeC2E3iWbTv1PwMD
+      Content-Length: 246
 
       ------WebKitFormBoundaryDeC2E3iWbTv1PwMD
       Content-Disposition: form-data; name="foldername"
@@ -572,7 +584,17 @@ Issue a file command
        is not operational when this parameter is present and set to ``true``, the request will fail with a response
        of ``409 Conflict``.
 
-     Upon success, a status code of :http:statuscode:`204` and an empty body is returned.
+     Upon success, a status code of :http:statuscode:`204` and an empty body is returned. If there already is an
+     active print job, a :http:statuscode:`409` is returned.
+
+     Requires the ``FILES_SELECT`` permission.
+
+   unselect
+     Unselects the currently selected file for printing.
+
+     Upon success, a status code of :http:statuscode:`204` and an empty body is returned. If no file is selected
+     or there already is an active print job, a :http:statuscode:`409` is returned. If path isn't ``current```
+     or the filename of the current selection, a :http:statuscode:`400` is returned
 
      Requires the ``FILES_SELECT`` permission.
 
@@ -768,7 +790,8 @@ Issue a file command
    :statuscode 400:             If the ``command`` is unknown or the request is otherwise invalid
    :statuscode 415:             If a ``slice`` command was issued against something other than an STL file.
    :statuscode 404:             If ``location`` is neither ``local`` nor ``sdcard`` or the requested file was not found
-   :statuscode 409:             If a selected file is supposed to start printing directly but the printer is not operational or
+   :statuscode 409:             If a selected file is supposed to start printing directly but the printer is not operational
+                                or if a file is to be selected but the printer is already printing or
                                 if a file to be sliced is supposed to be selected or start printing directly but the printer
                                 is not operational or already printing.
 

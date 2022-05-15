@@ -3,7 +3,7 @@
 General Concepts
 ================
 
-OctoPrint's plugins are `Python Packages <https://docs.python.org/2/tutorial/modules.html#packages>`_ which in their
+OctoPrint's plugins are :ref:`Python Packages <tut-packages>` which in their
 top-level module define a bunch of :ref:`control properties <sec-plugins-controlproperties>` defining
 metadata (like name, version etc of the plugin) as well as information on how to initialize the plugin and into what
 parts of the system the plugin will actually plug in to perform its job.
@@ -39,6 +39,6 @@ Some plugin types require a reload of the frontend or a restart of OctoPrint for
 can recognize such plugins by their implementations implementing :class:`~octoprint.plugin.ReloadNeedingPlugin` or
 :class:`~octoprint.plugin.RestartNeedingPlugin` or providing handlers for one of the hooks marked correspondingly.
 
-.. image:: ../images/plugins_lifecycle.png
+.. image:: ../images/plugins_lifecycle.svg
    :align: center
    :alt: The lifecycle of OctoPrint plugins.

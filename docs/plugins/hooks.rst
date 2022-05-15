@@ -65,7 +65,7 @@ the general type of script for which to look for additions ("gcode") and the scr
 return a 2-tuple of prefix and postfix if has something for either of those, otherwise ``None``. OctoPrint will then take
 care to add prefix and suffix as necessary after a small round of preprocessing.
 
-Plugins can easily add their own hooks too. For example, the `Software Update Plugin <https://github.com/foosel/OctoPrint/tree/master/src/octoprint/plugins/softwareupdate>`_
+Plugins can easily add their own hooks too. For example, the `Software Update Plugin <https://docs.octoprint.org/en/master/bundledplugins/softwareupdate.html>`_
 declares a custom hook "octoprint.plugin.softwareupdate.check_config" which other plugins can add handlers for in order
 to register themselves with the Software Update Plugin by returning their own update check configuration.
 
@@ -207,6 +207,8 @@ octoprint.access.permissions
 
 .. py:function:: additional_permissions_hook(*args, **kwargs)
 
+   .. versionadded:: 1.4.0
+
    Return a list of additional permissions to register in the system on behalf of the plugin. Use this
    to add granular permissions to your plugin which can be configured for users and user groups in the general
    access control settings of OctoPrint.
@@ -215,7 +217,7 @@ octoprint.access.permissions
    fields are as follows:
 
      * ``key``: A key for the permission to be used for referring to it from source code. This will turned uppercase
-       and prefixed with ``PLUGIN_<PLUGIN IDENTIFIER>_`` before being made available on ``octoprint.access.permissions.Permissions``, 
+       and prefixed with ``PLUGIN_<PLUGIN IDENTIFIER>_`` before being made available on ``octoprint.access.permissions.Permissions``,
        e.g. ``my_permission`` on the plugin with identifier ``example`` turns into ``PLUGIN_EXAMPLE_MY_PERMISSION`` and
        can be accessed as ``octoprint.access.permissions.Permissions.PLUGIN_EXAMPLE_MY_PERMISSION`` on the server and
        ``permissions.PLUGIN_EXAMPLE_MY_PERMISSION`` on the ``AccessViewModel`` on the client. Must only contain a-z, A-Z, 0-9 and _.
@@ -226,7 +228,7 @@ octoprint.access.permissions
        suffice.
      * ``dangerous``: Whether this permission should be considered dangerous (``True``) or not (``False``)
      * ``default_groups``: A list of standard groups this permission should be apply to by default. Standard groups
-       are ``admins``, ``users``, ``readonly`` and ``guests``
+       are ``octoprint.access.ADMIN_GROUP``, ``octoprint.access.USER_GROUP``, ``octoprint.access.READONLY_GROUP`` and ``octoprint.access.GUEST_GROUP``
 
    The following example is based on some actual code included in the bundled Application Keys plugin and defines
    one additional permission called ``ADMIN`` with a role ``admin`` which is marked as dangerous (since it gives
@@ -235,6 +237,8 @@ octoprint.access.permissions
 
    .. code-block:: python
 
+      from octoprint.access import ADMIN_GROUP
+      
       def get_additional_permissions(*args, **kwargs):
           return [
               dict(key="ADMIN",
@@ -260,6 +264,8 @@ octoprint.access.users.factory
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. py:function:: user_manager_factory_hook(components, settings, *args, **kwargs)
+
+   .. versionadded:: 1.4.0
 
    Return a :class:`~octoprint.access.users.UserManager` instance to use as global user manager object. This will
    be called only once during initial server startup.
@@ -295,6 +301,8 @@ octoprint.accesscontrol.keyvalidator
 
 .. py:function:: acl_keyvalidator_hook(apikey, *args, **kwargs)
 
+   .. versionadded:: 1.3.6
+
    Via this hook plugins may validate their own customized API keys to be used to access OctoPrint's API.
 
    ``apikey`` will be the API key as read from the request headers.
@@ -325,6 +333,8 @@ octoprint.cli.commands
 ~~~~~~~~~~~~~~~~~~~~~~
 
 .. py:function:: cli_commands_hook(cli_group, pass_octoprint_ctx, *args, **kwargs)
+
+   .. versionadded:: 1.3.0
 
    By providing a handler for this hook plugins may register commands on OctoPrint's command line interface (CLI).
 
@@ -449,6 +459,8 @@ octoprint.comm.protocol.firmware.info
 
 .. py:function:: firmware_info_hook(comm_instance, firmware_name, firmware_data, *args, **kwargs)
 
+   .. versionadded:: 1.3.9
+
    Be notified of firmware information received from the printer following an ``M115``.
 
    Hook handlers may use this to react/adjust behaviour based on reported firmware data. OctoPrint parses the received
@@ -472,15 +484,17 @@ octoprint.comm.protocol.firmware.info
       This includes I/O of any kind.
 
    :param object comm_instance: The :class:`~octoprint.util.comm.MachineCom` instance which triggered the hook.
-   :param str firmware_name: The name of the parsed capability
+   :param str firmware_name: The parsed name of the firmware
    :param dict firmware_data: All data contained in the ``M115`` report
 
 .. _sec-plugins-hook-comm-protocol-firmware-capabilities:
 
-octoprint.comm.firmware.protocol.capabilities
+octoprint.comm.protocol.firmware.capabilities
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. py:function:: firmware_capability_hook(comm_instance, capability, enabled, already_defined, *args, **kwargs)
+
+   .. versionadded:: 1.3.9
 
    Be notified of capability report entries received from the printer.
 
@@ -507,7 +521,9 @@ octoprint.comm.firmware.protocol.capabilities
 octoprint.comm.protocol.action
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. py:function:: protocol_action_hook(comm_instance, line, action, *args, **kwargs)
+.. py:function:: protocol_action_hook(comm_instance, line, action, name='', params='', *args, **kwargs)
+
+   .. versionadded:: 1.2.0
 
    React to a :ref:`action command <sec-features-action_commands>` received from the printer.
 
@@ -534,8 +550,12 @@ octoprint.comm.protocol.action
 
    :param object comm_instance: The :class:`~octoprint.util.comm.MachineCom` instance which triggered the hook.
    :param str line: The complete line as received from the printer, format ``// action:<command>``
-   :param str action: The parsed out action command, so for a ``line`` like ``// action:some_command`` this will be
+   :param str action: The parsed out action command incl. parameters, so for a ``line`` like ``// action:some_command key value`` this will be
+       ``some_command key value``
+   :param str name: The action command name, for a ``line`` like ``// action:some_command key value`` this will be
        ``some_command``
+   :param str params: The action command's parameter, for a ``line`` like ``// action:some_command key value`` this will
+       be ``key value``
 
 .. _sec-plugins-hook-comm-protocol-atcommand-phase:
 
@@ -548,6 +568,8 @@ This describes actually two hooks:
   * ``octoprint.comm.protocol.atcommand.sending``
 
 .. py:function:: protocol_atcommandphase_hook(comm_instance, phase, command, parameters, tags=None, *args, **kwargs)
+
+   .. versionadded:: 1.3.7
 
    Trigger on :ref:`@ commands <sec-features-atcommands>` as they progress through the ``queuing`` and ``sending``
    phases of the comm layer. See :ref:`the gcode phase hook <sec-plugins-hook-comm-protocol-gcode-phase>` for a
@@ -588,7 +610,7 @@ This describes actually two hooks:
 octoprint.comm.protocol.gcode.<phase>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This describes actually four hooks:
+This actually describes four hooks:
 
   * ``octoprint.comm.protocol.gcode.queuing``
   * ``octoprint.comm.protocol.gcode.queued``
@@ -596,6 +618,8 @@ This describes actually four hooks:
   * ``octoprint.comm.protocol.gcode.sent``
 
 .. py:function:: protocol_gcodephase_hook(comm_instance, phase, cmd, cmd_type, gcode, subcode=None, tags=None, *args, **kwargs)
+
+   .. versionadded:: 1.2.0
 
    Pre- and postprocess commands as they progress through the various phases of being sent to the printer. The phases
    are the following:
@@ -750,6 +774,8 @@ octoprint.comm.protocol.gcode.received
 
 .. py:function:: gcode_received_hook(comm_instance, line, *args, **kwargs)
 
+   .. versionadded:: 1.3.0
+
    Get the returned lines sent by the printer. Handlers should return the received line or in any case, the modified
    version of it. If the handler returns None, processing will be aborted and the communication layer will get an
    empty string as the received line. Note that Python functions will also automatically return ``None`` if an empty
@@ -782,6 +808,8 @@ octoprint.comm.protocol.gcode.error
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. py:function:: gcode_error_hook(comm_instance, error_message, *args, **kwargs)
+
+   .. versionadded:: 1.3.7
 
    Get the messages of any errors messages sent by the printer, with the leading ``Error:`` or ``!!`` already
    stripped. Handlers should return True if they handled that error internally and it should not be processed by
@@ -819,6 +847,9 @@ octoprint.comm.protocol.scripts
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. py:function:: protocol_scripts_hook(comm_instance, script_type, script_name, *args, **kwargs)
+
+   .. versionadded:: 1.2.0
+   .. versionchanged:: 1.3.7
 
    Return a prefix to prepend, postfix to append, and optionally a dictionary of variables to provide to the script ``script_name`` of type ``type``. Handlers should
    make sure to only proceed with returning additional scripts if the ``script_type`` and ``script_name`` match
@@ -864,6 +895,8 @@ octoprint.comm.protocol.temperatures.received
 
 .. py:function:: protocol_temperatures_received_hook(comm_instance, parsed_temperatures, *args, **kwargs)
 
+   .. versionadded:: 1.3.6
+
    Get the parsed temperatures returned by the printer, allowing handlers to modify them prior to handing them off
    to the system. Handlers are expected to either return ``parsed_temperatures`` as-is or a modified copy thereof.
 
@@ -890,12 +923,35 @@ octoprint.comm.protocol.temperatures.received
       :tab-width: 4
       :caption: `sanitize_temperatures.py <https://github.com/OctoPrint/Plugin-Examples/blob/master/sanitize_temperatures.py>`_
 
+.. _sec-plugins-hook-comm-transport-serial-additonal-port-names:
+
+octoprint.comm.transport.serial.additional_port_names
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. py:function:: additional_port_names_hook(candidates, *args, **kwargs)
+
+   .. versionadded:: 1.4.1
+
+   Return additional port names (not glob patterns!) to use as a serial connection to the printer. Expected to be
+   ``list`` of ``string``.
+
+   Useful in combination with :ref:`octoprint.comm.transport.serial.factory <sec-plugins-hook-comm-transport-serial-factory>`
+   to implement custom serial-like ports through plugins.
+
+   For an example of use see the bundled ``virtual_printer`` plugin.
+
+   :param list candidates: The port names already found on the system available for connection.
+   :return: Additional port names to offer up for connection.
+   :rtype: list
+
 .. _sec-plugins-hook-comm-transport-serial-factory:
 
 octoprint.comm.transport.serial.factory
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. py:function:: serial_factory_hook(comm_instance, port, baudrate, read_timeout, *args, **kwargs)
+
+   .. versionadded:: 1.2.0
 
    Return a serial object to use as serial connection to the printer. If a handler cannot create a serial object
    for the specified ``port`` (and ``baudrate``), it should just return ``None``.
@@ -907,21 +963,21 @@ octoprint.comm.transport.serial.factory
    closely if directly utilizing :class:`~octoprint.util.comm.MachineCom` functionality.
 
    A valid serial instance is expected to provide the following methods, analogue to PySerial's
-   `serial.Serial <https://pythonhosted.org//pyserial/pyserial_api.html#serial.Serial>`_:
+   :py:class:`serial.Serial`:
 
    readline(size=None, eol='\n')
-       Reads a line from the serial connection, compare `serial.Filelike.readline <https://pythonhosted.org//pyserial/pyserial_api.html#serial.FileLike.readline>`_.
+       Reads a line from the serial connection, compare :py:meth:`serial.Serial.readline`.
    write(data)
-       Writes data to the serial connection, compare `serial.Filelike.write <https://pythonhosted.org//pyserial/pyserial_api.html#serial.FileLike.write>`_.
+       Writes data to the serial connection, compare :py:meth:`serial.Serial.write`.
    close()
-       Closes the serial connection, compare `serial.Serial.close <https://pythonhosted.org//pyserial/pyserial_api.html#serial.Serial.close>`_.
+       Closes the serial connection, compare :py:meth:`serial.Serial.close`.
 
    Additionally setting the following attributes need to be supported if baudrate detection is supposed to work:
 
    baudrate
-       An integer describing the baudrate to use for the serial connection, compare `serial.Serial.baudrate <https://pythonhosted.org//pyserial/pyserial_api.html#serial.Serial.baudrate>`_.
+       An integer describing the baudrate to use for the serial connection, compare :py:attr:`serial.Serial.baudrate`.
    timeout
-       An integer describing the read timeout on the serial connection, compare `serial.Serial.timeout <https://pythonhosted.org//pyserial/pyserial_api.html#serial.Serial.timeout>`_.
+       An integer describing the read timeout on the serial connection, compare :py:attr:`serial.Serial.timeout`.
 
    **Example:**
 
@@ -973,6 +1029,8 @@ octoprint.events.register_custom_events
 
 .. py:function:: register_custom_events_hook(*args, **kwargs)
 
+   .. versionadded:: 1.3.11
+
    Return a list of custom :ref:`events <sec-events>` to register in the system for your plugin.
 
    Should return a list of strings which represent the custom events. Their name on the `octoprint.events.Events` object
@@ -1000,6 +1058,8 @@ octoprint.filemanager.analysis.factory
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. py:function:: analysis_queue_factory_hook(*args, **kwargs)
+
+   .. versionadded:: 1.3.9
 
    Return additional (or replacement) analysis queue factories used for analysing uploaded files.
 
@@ -1039,6 +1099,8 @@ octoprint.filemanager.extension_tree
 
 .. py:function:: file_extension_hook(*args, **kwargs)
 
+   .. versionadded:: 1.2.0
+
    Return additional entries for the tree of accepted file extensions for uploading/handling by the file manager.
 
    Should return a dictionary to merge with the existing extension tree, adding additional extension groups to
@@ -1075,6 +1137,8 @@ octoprint.filemanager.preprocessor
 
 .. py:function:: file_preprocessor_hook(path, file_object, links=None, printer_profile=None, allow_overwrite=False, *args, **kwargs)
 
+   .. versionadded:: 1.2.0
+
    Replace the ``file_object`` used for saving added files to storage by calling :func:`~octoprint.filemanager.util.AbstractFileWrapper.save`.
 
    ``path`` will be the future path of the file on the storage. The file's name is accessible via
@@ -1102,17 +1166,21 @@ octoprint.filemanager.preprocessor
    :return: The `file_object` as passed in or None, or a replaced version to use instead for further processing.
    :rtype: AbstractFileWrapper or None
 
-.. _sec-plugins-hook-plugin-loginui-theming:
+.. _sec-plugins-hook-plugin-backup-excludes:
 
-octoprint.plugin.loginui.theming
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+octoprint.plugin.backup.additional_excludes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-See :ref:`here <sec-bundledplugins-loginui-hooks-theming>`.
+.. versionadded:: 1.5.0
+
+See :ref:`here <sec-bundledplugins-backup-hooks-excludes>`.
 
 .. _sec-plugins-hook-plugin-pluginmanager-reconnect:
 
 octoprint.plugin.pluginmanager.reconnect_hooks
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. versionadded:: 1.4.0
 
 See :ref:`here <sec-bundledplugins-pluginmanager-hooks-reconnect_hooks>`.
 
@@ -1121,7 +1189,38 @@ See :ref:`here <sec-bundledplugins-pluginmanager-hooks-reconnect_hooks>`.
 octoprint.plugin.softwareupdate.check_config
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. versionadded:: 1.2.0
+
 See :ref:`here <sec-bundledplugins-softwareupdate-hooks-check_config>`.
+
+.. _sec-plugins-hooks-plugin-printer-additional_state_data:
+
+octoprint.printer.additional_state_data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. py:function:: additional_state_data_hook(initial=False, *args, **kwargs)
+
+   .. versionadded:: 1.5.0
+
+   Use this to inject additional data into the data structure returned from the printer backend to the frontend
+   on the push socket or other registered :class:`octoprint.printer.PrinterCallback`. Anything you return here
+   will be located beneath ``plugins.<your plugin id>`` in the resulting initial and current data push structure.
+
+   The ``initial`` parameter will be ``True`` if this the additional update sent to the callback. Your handler should
+   return a ``dict``, or ``None`` if nothing should be included.
+
+   .. warning::
+
+      Make sure to not perform any computationally expensive or otherwise long running actions within these handlers as
+      you could stall the whole state monitor and thus updates being pushed to the frontend.
+
+      This includes I/O of any kind.
+
+      Cache your data!
+
+   :param boolean initial: True if this is the initial update, False otherwise
+   :return: Additional data to include
+   :rtype: dict
 
 .. _sec-plugins-hook-printer-factory:
 
@@ -1129,6 +1228,8 @@ octoprint.printer.factory
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. py:function:: printer_factory_hook(components, *args, **kwargs)
+
+   .. versionadded:: 1.3.0
 
    Return a :class:`~octoprint.printer.PrinterInstance` instance to use as global printer object. This will
    be called only once during initial server startup.
@@ -1154,12 +1255,34 @@ octoprint.printer.factory
    :return: The ``printer`` instance to use globally.
    :rtype: PrinterInterface subclass or None
 
+.. _sec-plugins-hook-printer-handle_connect:
+
+octoprint.printer.handle_connect
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. py:function:: handle_connect(*args, **kwargs):
+
+   .. versionadded:: 1.6.0
+
+   Allows plugins to perform actions upon connecting to a printer. By returning ``True``,
+   plugins may also prevent further processing of the connect command. This hook is of
+   special interest if your plugin needs a connect from going through under certain
+   circumstances or if you need to do something before a connection to the printer is
+   established (e.g. switching on power to the printer).
+
+   :param kwargs: All connection parameters supplied to the ``connect`` call. Currently
+                  this also includes ``port``, ``baudrate`` and ``profile``.
+   :return: ``True`` if OctoPrint should not proceed with the connect
+   :rtype: boolean or None
+
 .. _sec-plugins-hook-printer-estimation-factory:
 
 octoprint.printer.estimation.factory
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. py:function:: print_time_estimator_factory(*args, **kwargs)
+
+   .. versionadded:: 1.3.9
 
    Return a :class:`~octoprint.printer.estimation.PrintTimeEstimator` subclass (or factory) to use for print time
    estimation. This will be called on each start of a print or streaming job with a single parameter ``job_type``
@@ -1206,6 +1329,8 @@ octoprint.printer.sdcardupload
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. py:function:: sd_card_upload_hook(printer, filename, path, start_callback, success_callback, failure_callback, *args, **kwargs)
+
+   .. versionadded:: 1.3.11
 
    Via this hook plugins can change the way files are being uploaded to the sd card of the printer.
 
@@ -1292,6 +1417,8 @@ octoprint.server.api.after_request
 
 .. py:function:: after_request_handlers_hook(*args, **kwargs)
 
+   .. versionadded:: 1.3.10
+
    Allows adding additional after-request-handlers to API endpoints defined by OctoPrint itself and installed plugins.
 
    Your plugin might need this to further restrict access to API methods.
@@ -1305,7 +1432,9 @@ octoprint.server.api.after_request
 octoprint.server.api.before_request
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. py:function:: after_request_handlers_hook(*args, **kwargs)
+.. py:function:: before_request_handlers_hook(*args, **kwargs)
+
+   .. versionadded:: 1.3.10
 
    Allows adding additional before-request-handlers to API endpoints defined by OctoPrint itself and installed plugins.
 
@@ -1322,6 +1451,8 @@ octoprint.server.http.access_validator
 
 .. py:function:: access_validator_hook(request, *args, **kwargs)
 
+   .. versionadded:: 1.3.10
+
    Allows adding additional access validators to the default tornado routers.
 
    Your plugin might need to this to restrict acccess to downloads and webcam snapshots further.
@@ -1336,6 +1467,8 @@ octoprint.server.http.bodysize
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. py:function:: server_bodysize_hook(current_max_body_sizes, *args, **kwargs)
+
+   .. versionadded:: 1.2.0
 
    Allows extending the list of custom maximum body sizes on the web server per path and HTTP method with custom entries
    from plugins.
@@ -1378,6 +1511,8 @@ octoprint.server.http.routes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. py:function:: server_route_hook(server_routes, *args, **kwargs)
+
+   .. versionadded:: 1.2.0
 
    Allows extending the list of routes registered on the web server.
 
@@ -1446,6 +1581,8 @@ octoprint.server.sockjs.authed
 
 .. py:function:: socket_authed_hook(socket, user, *args, **kwargs):
 
+   .. versionadded:: 1.3.10
+
    Allows plugins to be notified that a user got authenticated or deauthenticated on the socket (e.g. due to logout).
 
    :param object socket: the socket object which is about to be registered
@@ -1458,12 +1595,12 @@ octoprint.server.sockjs.register
 
 .. py:function:: socket_registration_hook(socket, user, *args, **kwargs):
 
+   .. versionadded:: 1.3.10
+
    Allows plugins to prevent a new :ref:`push socket client <sec-api-push>` to be registered to the system.
 
    Handlers should return either ``True`` or ``False``. ``True`` signals to proceed with normal registration. ``False``
    signals to not register the client.
-
-   See the bundled :ref:`Forcelogin Plugin <sec-bundledplugins-forcelogin>` for an example on how to utilize this.
 
    :param object socket: the socket object which is about to be registered
    :param object user: the user currently authenticated on the socket - might be None
@@ -1477,11 +1614,11 @@ octoprint.server.sockjs.emit
 
 .. py:function:: socket_emit_hook(socket, user, message, payload, *args, **kwargs):
 
+   .. versionadded:: 1.3.10
+
    Allows plugins to prevent any messages to be emitted on an existing :ref:`push connection <sec-api-push>`.
 
    Handlers should return either ``True`` to allow the message to be emitted, or ``False`` to prevent it.
-
-   See the bundled :ref:`Forcelogin Plugin <sec-bundledplugins-forcelogin>` for an example on how to utilize this.
 
    :param object socket: the socket object on which a message is about to be emitted
    :param object user: the user currently authenticated on the socket - might be None
@@ -1490,12 +1627,118 @@ octoprint.server.sockjs.emit
    :return: whether to proceed with sending the message (``True``) or not (``False``)
    :rtype: boolean
 
+.. _sec-plugins-hook-system-additional_commands:
+
+octoprint.system.additional_commands
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. py:function:: additional_commands_hook(*args, **kwargs)
+
+   .. versionadded:: 1.7.0
+
+   Allows adding additional system commands into the system menu. Handlers must return
+   a list of system command definitions, each definition matching the following data
+   structure:
+
+   .. list-table::
+      :widths: 15 5 10 30
+      :header-rows: 1
+
+      * - Name
+        - Multiplicity
+        - Type
+        - Description
+      * - ``name``
+        - 1
+        - String
+        - The name to display in the menu.
+      * - ``action``
+        - 1
+        - String
+        - An identifier for the action, must only consist of lower case a-z, numbers, ``-`` and ``_`` (``[a-z0-9-_]``).
+      * - ``command``
+        - 1
+        - String
+        - The system command to execute.
+      * - ``confirm``
+        - 0..1
+        - String
+        - An optional message to show as a confirmation dialog before executing the command.
+      * - ``async``
+        - 0..1
+        - bool
+        - If ``True``, the command will be run asynchronously and the API call will return immediately after enqueuing it for execution.
+      * - ``ignore``
+        - 0..1
+        - bool
+        - If ``True``, OctoPrint will ignore the result of the command's (and ``before``'s, if set) execution and return a successful result regardless. Defaults to ``False``.
+      * - ``debug``
+        - 0..1
+        - bool
+        - If ``True``, the command will generate debug output in the log including the command line that's run. Use with care. Defaults to ``False``
+      * - ``before``
+        - 0..1
+        - callable
+        - Optional callable to execute before the actual ``command`` is run. If ``ignore`` is false and this fails in any way, the command will not run and an error returned.
+
+   .. code-block:: python
+
+      def get_additional_commands(*args, **kwargs):
+          return [
+              {
+                  "name": "Just a test",
+                  "action": "test",
+                  "command": "logger This is just a test of an OctoPrint system command from a plugin",
+                  "before": lambda: print("Hello World!")
+              }
+          ]
+
+      __plugin_hooks__ = {
+          "octoprint.system.additional_commands": get_additional_commands
+      }
+
+   :return: a list of command specifications
+   :rtype: list
+
+.. _sec-plugins-hook-systeminfo-additional_bundle_files:
+
+octoprint.systeminfo.additional_bundle_files
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. py:function:: additional_bundle_files_hook(*args, **kwargs)
+
+   .. versionadded:: 1.7.0
+
+   Allows bundled plugins to extend the list of files to include in the systeminfo bundle.
+   Note that this hook will ignore third party plugins. Handlers must return a dictionary
+   mapping file names in the bundle to either local log paths on disk or a ``callable``
+   that will be called to generate the file's content inside the bundle.
+
+   **Example**
+
+   Add a plugin's ``console`` log file to the systeminfo bundle:
+
+   .. code-block:: python
+
+      def get_additional_bundle_files(*args, **kwargs):
+        console_log = self._settings.get_plugin_logfile_path(postfix="console")
+        return {os.path.basename(console_log): console_log}
+
+      __plugin_hooks__ = {
+          "octoprint.systeminfo.additional_bundle_files": get_additional_bundle_files
+      }
+
+   :return: a dictionary mapping bundle file names to bundle file content
+   :rtype: dict
+
 .. _sec-plugins-hook-timelapse-extensions:
 
 octoprint.timelapse.extensions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. py:function:: timelapse_extension_hook(*args, **kwargs)
+
+   .. versionadded:: 1.3.10
 
    Allows extending the set of supported file extensions for timelapse files. Handlers must return a list of
    additional file extensions.
@@ -1522,6 +1765,8 @@ octoprint.ui.web.templatetypes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. py:function:: templatetype_hook(template_sorting, template_rules, *args, **kwargs)
+
+   .. versionadded:: 1.2.0
 
    Allows extending the set of supported template types in the web interface. This is interesting for plugins which want
    to offer other plugins to hook into their own offered UIs. Handlers must return a list of additional template
@@ -1629,12 +1874,50 @@ octoprint.ui.web.templatetypes
    :return: a list of 3-tuples (template type, rule, sorting spec)
    :rtype: list
 
+.. _sec-plugins-hook-theming-dialog:
+
+octoprint.theming.<dialog>
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This actually describes two hooks:
+
+  * ``octoprint.theming.login``
+  * ``octoprint.theming.recovery``
+
+.. py:function:: ui_theming_hook(*args, **kwargs)
+
+   .. versionadded:: 1.5.0
+
+   Support theming of the login or recovery dialog, just in case the core UI is themed as well. Use to return a list of additional
+   CSS file URLs to inject into the dialog HTML.
+
+   Example usage by a plugin:
+
+   .. code-block:: python
+
+      def loginui_theming():
+          from flask import url_for
+          return [url_for("plugin.myplugin.static", filename="css/loginui_theme.css")]
+
+      __plugin_hooks__ = {
+          "octoprint.theming.login": loginui_theming
+      }
+
+   Only a list of ready-made URLs to CSS files is supported, neither LESS nor JS. Best use
+   ``url_for`` like in the example above to be prepared for any configured prefix URLs.
+
+   :return: A list of additional CSS URLs to inject into the login or recovery dialog.
+   :rtype: A list of strings.
+
+
 .. _sec-plugins-hook-timelapse-capture-pre:
 
 octoprint.timelapse.capture.pre
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. py:function:: capture_pre_hook(filename)
+
+   .. versionadded:: 1.4.0
 
    Perform specific actions prior to capturing a timelapse frame.
 
@@ -1651,10 +1934,12 @@ octoprint.timelapse.capture.post
 
 .. py:function:: capture_post_hook(filename, success)
 
+   .. versionadded:: 1.4.0
+
    Perform specific actions after capturing a timelapse frame.
 
    ``filename`` will be the path of the frame that should have been saved.
-   ``sucesss`` indicates whether the capture was successful or not.
+   ``success`` indicates whether the capture was successful or not.
 
    :param str filename: The path of the frame that should have been saved.
    :param boolean success: Indicates whether the capture was successful or not.

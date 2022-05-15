@@ -68,6 +68,23 @@ OctoPrint's SockJS socket also accepts two commands from the client to the serve
          "auth": "someuser:LGZ0trf8By"
        }
 
+    An example for an auth roundtrip with only an API key using the :ref:`JS Client Library <sec-jsclientlib-base>`
+    can be found :ref:`here <sec-jsclient-socket-authsample>`.
+
+    .. mermaid::
+
+       sequenceDiagram
+          participant Client
+          participant API
+          participant Websocket
+
+          Client->>API: GET /api/login?passive=true&apikey=...
+          API->>Client: { name: ..., session: ..., ... }
+
+          note over Client: auth = name ":" session
+
+          Client->>Websocket: { "auth": auth }
+
   * ``throttle``: Usually, OctoPrint will push the general state update
     in the ``current`` message twice per second. For some clients that might still
     be too fast, so they can signal a different factor to OctoPrint utilizing the
@@ -177,6 +194,15 @@ Data model
      - 0..*
      - List of String
      - Lines for the serial communication log (special messages)
+   * - ``resends``
+     - 1
+     - :ref:`Resend stats <sec-api-datamodel-printer-resends>`
+     - Current resend statistics for the connection
+   * - ``plugins``
+     - 0..1
+     - Map of plugin identifiers to additional data
+     - Additional data injected by plugins via the :ref:`octoprint.printer.additional_state_data hook <sec-plugins-hooks-plugin-printer-additional_state_data>`,
+       indexed by plugin identifier. Structure of additional data is determined by the plugin.
 
 .. _sec-api-push-datamodel-event:
 

@@ -1,13 +1,12 @@
-name: Test install of branches and latest release
+name: Test install of branches and latest release twice per day
 
 on:
   push:
     branches:
       - master
-  repository_dispatch:
-    types: [test_install]
+  workflow_dispatch:
   schedule:
-    - cron: '0 */12 * * *'
+    - cron: "0 */12 * * *"
 
 jobs:
   install-branch:
@@ -15,7 +14,7 @@ jobs:
     strategy:
       matrix:
         os: ["ubuntu-latest"]
-        python: ["2.7", "3.7", "3.8"]
+        python: ["2.7", "3.7", "3.8", "3.9"]
         branch: ["master"]
     runs-on: ${{ matrix.os }}
     steps:
@@ -27,6 +26,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ matrix.branch }}
+          fetch-depth: 0
       - name: 👷 Build and install checkout
         run: |
           pip install .
@@ -35,21 +35,21 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.discord_webhook }}
         uses: Ilshidur/action-discord@master
         with:
-          args: '☑️ Test install on Python ${{ matrix.python }} under `${{ matrix.os }}` for `OctoPrint/OctoPrint:${{ matrix.branch }}` was successful'
+          args: "☑️ Test install on Python ${{ matrix.python }} under `${{ matrix.os }}` for `OctoPrint/OctoPrint:${{ matrix.branch }}` was successful"
       - name: 📧 Discord failure notification
         if: failure()
         env:
           DISCORD_WEBHOOK: ${{ secrets.discord_webhook }}
         uses: Ilshidur/action-discord@master
         with:
-          args: '🚫 Test install on Python ${{ matrix.python }} under `${{ matrix.os }}` for `OctoPrint/OctoPrint:${{ matrix.branch }}` failed'
+          args: "🚫 Test install on Python ${{ matrix.python }} under `${{ matrix.os }}` for `OctoPrint/OctoPrint:${{ matrix.branch }}` failed"
 
   install-latest:
     name: Install latest release
     strategy:
       matrix:
         os: ["ubuntu-latest"]
-        python: ["2.7", "3.7", "3.8"]
+        python: ["2.7", "3.7", "3.8", "3.9"]
     runs-on: ${{ matrix.os }}
     steps:
       - name: 👀 Determine latest release
@@ -69,11 +69,11 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.discord_webhook }}
         uses: Ilshidur/action-discord@master
         with:
-          args: '☑️ Test install on Python ${{ matrix.python }} under `${{ matrix.os }}` for `OctoPrint/OctoPrint:${{ steps.latest.outputs.release }}` was successful'
+          args: "☑️ Test install on Python ${{ matrix.python }} under `${{ matrix.os }}` for `OctoPrint/OctoPrint:${{ steps.latest.outputs.release }}` was successful"
       - name: 📧 Discord failure notification
         if: failure()
         env:
           DISCORD_WEBHOOK: ${{ secrets.discord_webhook }}
         uses: Ilshidur/action-discord@master
         with:
-          args: '🚫 Test install on Python ${{ matrix.python }} under `${{ matrix.os }}` for `OctoPrint/OctoPrint:${{ steps.latest.outputs.release }}` failed'
+          args: "🚫 Test install on Python ${{ matrix.python }} under `${{ matrix.os }}` for `OctoPrint/OctoPrint:${{ steps.latest.outputs.release }}` failed"
